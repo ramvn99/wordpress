@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+
+    environment {
+        // Define GitHub repository URL (Replace with your actual repo URL)
+        GIT_REPO = 'https://github.com/your-username/your-repo.git'
+        BRANCH = 'main' // Replace with the branch you want to pull
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                echo 'Pulling code from GitHub...'
+
+                // Use Git plugin to clone the repository
+                git branch: "${BRANCH}",
+                    url: "${GIT_REPO}"
+
+                echo 'Repository successfully pulled!'
+            }
+        }
+    }
+}
