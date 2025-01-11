@@ -2,23 +2,71 @@ pipeline {
     agent any
 
     environment {
-        // Define GitHub repository URL
         GIT_REPO = 'https://github.com/ramvn99/wordpress.git'
-        BRANCH = 'main' // Branch to pull
+        BRANCH = 'main'
+        DOCKER_IMAGE = 'ramvn/saibaba'
+        DOCKER_CREDENTIALS = 'dockerhub-creds' // Jenkins credentials ID for Docker Hub
+        AWS_CREDENTIALS = 'aws-cred' // Jenkins credentials ID for AWS Access Key and Secret Key
+        EKS_CLUSTER_NAME = 'eksdemocluster'
+        AWS_REGION = 'eu-west-1'
+        K8S_MANIFEST_PATH = 'ramvn/wordpress/k8s' // Path to Kubernetes manifests in the repository
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout from SCM') {
             steps {
-                echo 'Pulling code from GitHub...'
-
-
-                // Pull the repository from the specified branch
-                git branch: "${BRANCH}",
-                    url: "${GIT_REPO}"
-
-                echo 'Repository successfully pulled!'
+                echo 'Checking out application and Kubernetes manifests from GitHub...'
+                git branch: "${BRANCH}", url: "${GIT_REPO}"
             }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                sh 'docker build -t ${DOCKER_IMAGE}:latest .' // Build Docker image
+            }
+        }
+
+        stage('Push Docker Image to DockerHub') {
+            steps {
+                echo 'Pushing Docker image to DockerHub...'
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                    docker push ${DOCKER_IMAGE}:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Run Docker Compose') {
+            steps {
+                echo 'Starting services using Docker Compose...'
+                dir('path/to/docker-compose-directory') { // Adjust path if needed
+                    sh 'docker-compose up -d'
+                }
+            }
+        }
+
+        stage('Deploy Kubernetes Manifests to EKS') {
+            steps {
+                echo 'Deploying application to Amazon EKS...'
+                withCredentials([awsCredentials(credentialsId: "${AWS_CREDENTIALS}")]) {
+                    sh '''
+                    # Configure kubectl for EKS
+                    aws eks --region ${AWS_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}
+
+                    # Apply Kubernetes manifests
+                    kubectl apply -f ${K8S_MANIFEST_PATH}/
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution completed.'
         }
     }
 }
