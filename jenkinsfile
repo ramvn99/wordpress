@@ -51,7 +51,8 @@ pipeline {
         stage('Deploy Kubernetes Manifests to EKS') {
             steps {
                 echo 'Deploying application to Amazon EKS...'
-                withCredentials([awsCredentials(credentialsId: "${AWS_CREDENTIALS}")]) {
+               withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-cred', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) 
+   {
                     sh '''
                     # Configure kubectl for EKS
                     aws eks --region ${AWS_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}
