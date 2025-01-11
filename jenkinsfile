@@ -51,7 +51,7 @@ pipeline {
         stage('Deploy Kubernetes Manifests to EKS') {
             steps {
                 echo 'Deploying application to Amazon EKS...'
-               withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-cred', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) 
+               withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'jenkinsforeks-cred', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) 
                 {
                     sh '''
                     # Configure kubectl for EKS
