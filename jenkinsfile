@@ -6,7 +6,7 @@ pipeline {
         BRANCH = 'main'
         DOCKER_IMAGE = 'ramvn/flaskimg'
         DOCKER_CREDENTIALS = 'docker-cred' // Jenkins credentials ID for Docker Hub
-        AWS_CREDENTIALS = 'aws-cred' // Jenkins credentials ID for AWS Access Key and Secret Key
+        AWS_CREDENTIALS = 'jenkinsforeks-cred' // Jenkins credentials ID for AWS Access Key and Secret Key
         EKS_CLUSTER_NAME = 'eksdemocluster'
         AWS_REGION = 'eu-west-1'
         K8S_MANIFEST_PATH = 'ramvn/wordpress/k8s' // Path to Kubernetes manifests in the repository
@@ -52,7 +52,7 @@ pipeline {
             steps {
                 echo 'Deploying application to Amazon EKS...'
                withCredentials([aws(accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'aws-cred', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) 
-   {
+                {
                     sh '''
                     # Configure kubectl for EKS
                     aws eks --region ${AWS_REGION} update-kubeconfig --name ${EKS_CLUSTER_NAME}
