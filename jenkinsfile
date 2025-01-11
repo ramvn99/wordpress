@@ -5,7 +5,7 @@ pipeline {
         GIT_REPO = 'https://github.com/ramvn99/wordpress.git'
         BRANCH = 'main'
         DOCKER_IMAGE = 'ramvn/flaskimg'
-        DOCKER_CREDENTIALS = 'dockerhub-creds' // Jenkins credentials ID for Docker Hub
+        DOCKER_CREDENTIALS = 'docker-cred' // Jenkins credentials ID for Docker Hub
         AWS_CREDENTIALS = 'aws-cred' // Jenkins credentials ID for AWS Access Key and Secret Key
         EKS_CLUSTER_NAME = 'eksdemocluster'
         AWS_REGION = 'eu-west-1'
