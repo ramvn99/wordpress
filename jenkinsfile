@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        // Define GitHub repository URL (Replace with your actual repo URL)
-        GIT_REPO = 'https://github.com/your-username/your-repo.git'
-        BRANCH = 'main' // Replace with the branch you want to pull
+        // Define GitHub repository URL
+        GIT_REPO = 'https://github.com/ramvn99/wordpress.git'
+        BRANCH = 'main' // Branch to pull
     }
 
     stages {
@@ -12,7 +12,7 @@ pipeline {
             steps {
                 echo 'Pulling code from GitHub...'
 
-                // Use Git plugin to clone the repository
+                // Pull the repository from the specified branch
                 git branch: "${BRANCH}",
                     url: "${GIT_REPO}"
 
